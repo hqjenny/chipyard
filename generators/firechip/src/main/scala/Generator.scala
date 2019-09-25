@@ -2,7 +2,7 @@
 
 package firesim.firesim
 
-import java.io.{File}
+import java.io.{File, FileWriter}
 
 import chisel3.experimental.RawModule
 import chisel3.internal.firrtl.{Circuit, Port}
@@ -50,7 +50,7 @@ trait IsFireSimGeneratorLike extends HasFireSimGeneratorUtilities with HasTestSu
 object FireSimGenerator extends App with IsFireSimGeneratorLike {
   lazy val generatorArgs = GeneratorArgs(args)
   lazy val genDir = new File(names.targetDir)
-  elaborateAndCompileWithMidas
+  elaborate
   generateTestSuiteMakefrags
   generateHostVerilogHeader
   generateArtefacts

@@ -122,7 +122,7 @@ abstract class FireSimTestSuite(
 
   clean
   mkdirs
-  elaborateAndCompileWithMidas
+  elaborate
   generateTestSuiteMakefrags
   runTest("verilator", "rv64ui-p-simple", false, Seq(s"""EXTRA_SIM_ARGS=+trace-test-output0"""))
   diffTracelog("rv64ui-p-simple.out")

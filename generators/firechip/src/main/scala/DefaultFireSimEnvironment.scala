@@ -13,8 +13,8 @@ import testchipip.{HasPeripherySerialModuleImp, HasPeripheryBlockDeviceModuleImp
 import icenet.HasPeripheryIceNICModuleImpValidOnly
 
 import junctions.{NastiKey, NastiParameters}
-import midas.widgets.{IsEndpoint, PeekPokeEndpoint}
-import midas.models.{FASEDEndpoint, FasedAXI4Edge}
+import midas.widgets.{TypedEndpoint, PeekPokeEndpoint}
+import midas.models.{FASEDEndpoint, CompleteConfig, AXI4EdgeSummary}
 import firesim.endpoints._
 import firesim.configs.MemModelKey
 
@@ -41,7 +41,7 @@ class DefaultFireSimEnvironment[T <: LazyModule](dutGen: () => T)(implicit val p
     // if that Mixin trait is present in the target's class instance
     //
     // TODO: If we like this PF approach, register them in the config instead of centralizing them here
-    val endpointBinders = Seq[PartialFunction[Any, Seq[IsEndpoint]]](
+    val endpointBinders = Seq[PartialFunction[Any, Seq[TypedEndpoint[_,_]]]](
       { case t: HasPeripheryDebugModuleImp =>
         t.debug.clockeddmi.foreach({ cdmi =>
           cdmi.dmi.req.valid := false.B
@@ -62,11 +62,8 @@ class DefaultFireSimEnvironment[T <: LazyModule](dutGen: () => T)(implicit val p
             val nastiKey = NastiParameters(axi4Bundle.r.bits.data.getWidth,
                                            axi4Bundle.ar.bits.addr.getWidth,
                                            axi4Bundle.ar.bits.id.getWidth)
-            val fasedP = p.alterPartial({
-              case NastiKey => nastiKey
-              case FasedAXI4Edge => Some(edge)
-            })
-            FASEDEndpoint(axi4Bundle, reset, p(MemModelKey)(fasedP))(fasedP)
+            FASEDEndpoint(axi4Bundle, reset,
+              CompleteConfig(p(firesim.configs.MemModelKey), nastiKey, Some(AXI4EdgeSummary(edge))))
           })
         }).toSeq
       },
