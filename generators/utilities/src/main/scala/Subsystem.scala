@@ -54,10 +54,14 @@ trait HasBoomAndRocketTiles extends HasTiles
     rocket
   }
 
+  val bwRegulator = LazyModule(new BwRegulator(0x20000000L))
+  pbus.toVariableWidthSlave(Some("bw-reg")) { bwRegulator.regnode }
+
   val boomTiles = boomTileParams.zip(boomCrossings).map { case (tp, crossing) =>
     val boom = LazyModule(new BoomTile(tp, crossing, PriorityMuxHartIdFromSeq(boomTileParams), logicalTreeNode))
 
-    connectMasterPortsToSBus(boom, crossing)
+    //connectMasterPortsToSBus(boom, crossing)
+    connectMasterPortsToSBusBwReg(boom, crossing, bwRegulator)
     connectSlavePortsToCBus(boom, crossing)
 
     def treeNode: RocketTileLogicalTreeNode = new RocketTileLogicalTreeNode(boom.rocketLogicalTree.getOMInterruptTargets)
@@ -103,6 +107,9 @@ class SubsystemModuleImp[+L <: Subsystem](_outer: L) extends BaseSubsystemModule
     wire.reset_vector := global_reset_vector
   }
 
+  //tile_inputs.zip(outer.bwRegulator.module.io.nWbInhibit).map { case (wire, nWbInhibit) =>
+  //  wire.nWbInhibit := RegNext(nWbInhibit)
+  //}
   // create file with boom params
   ElaborationArtefacts.add("""core.config""", outer.tiles.map(x => x.module.toString).mkString("\n"))
 }

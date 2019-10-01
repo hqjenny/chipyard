@@ -1,0 +1,47 @@
+diff --git a/src/main/scala/common/tile.scala b/src/main/scala/common/tile.scala
+index 16f1c6b..24af419 100644
+--- a/src/main/scala/common/tile.scala
++++ b/src/main/scala/common/tile.scala
+@@ -227,6 +227,7 @@ class BoomTileModuleImp(outer: BoomTile) extends BaseTileModuleImp(outer)
+   outer.bpwatchSourceNode.bundle <> DontCare // core.io.bpwatch
+   core.io.hartid := constants.hartid
+   outer.dcache.module.io.hartid := constants.hartid
++  //outer.dcache.module.io.nWbInhibit := constants.nWbInhibit
+   outer.frontend.module.io.hartid := constants.hartid
+   outer.frontend.module.io.reset_vector := constants.reset_vector
+ 
+@@ -239,6 +240,8 @@ class BoomTileModuleImp(outer: BoomTile) extends BaseTileModuleImp(outer)
+   fcsr_rm := core.io.fcsr_rm
+   core.io.rocc := DontCare
+   core.io.reset_vector := DontCare
++  core.io.perf := constants.perf
++
+ 
+ 
+   if (outer.roccs.size > 0) {
+diff --git a/src/main/scala/exu/core.scala b/src/main/scala/exu/core.scala
+index 7165c21..39342fe 100644
+--- a/src/main/scala/exu/core.scala
++++ b/src/main/scala/exu/core.scala
+@@ -61,6 +61,8 @@ trait HasBoomCoreIO extends freechips.rocketchip.tile.HasTileParameters
+     val trace = Output(Vec(coreParams.retireWidth,
+       new freechips.rocketchip.rocket.TracedInstruction))
+     val release = Flipped(Valid(new boom.lsu.ReleaseInfo))
++    val perf = new freechips.rocketchip.tile.TilePerfInputs
++
+     val fcsr_rm = UInt(freechips.rocketchip.tile.FPConstants.RM_SZ.W)
+   }
+ }
+@@ -217,6 +219,12 @@ class BoomCore(implicit p: Parameters) extends BoomModule
+       ("ITLB miss",   () => io.ifu.perf.tlbMiss),
+ //      ("DTLB miss",   () => io.dmem.perf.tlbMiss),
+       ("L2 TLB miss", () => io.ptw.perf.l2miss)))))
++//       ("L2 TLB miss", () => io.ptw.perf.l2miss),
++//       ("D$ write miss", () => io.dmem.perf.acquireT),
++//       ("D$ releaseData", () => io.dmem.perf.releaseData),
++//       ("D$ probeAckData", () => io.dmem.perf.probeAckData),
++//       ("blkdev get", () => io.perf.blkdev_get),
++//       ("blkdev put", () => io.perf.blkdev_put)))))
+ 
+   val csr = Module(new freechips.rocketchip.rocket.CSRFile(perfEvents, boomParams.customCSRs.decls))
+   csr.io.inst foreach { c => c := DontCare }
