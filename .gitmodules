@@ -95,3 +95,6 @@
 [submodule "toolchains/qemu"]
 	path = toolchains/qemu
 	url = https://github.com/qemu/qemu.git
+[submodule "tools/centrifuge"]
+	path = tools/centrifuge
+	url = git@github.com:hqjenny/centrifuge.git
