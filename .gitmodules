@@ -98,3 +98,6 @@
 [submodule "tools/axe"]
 	path = tools/axe
 	url = https://github.com/CTSRD-CHERI/axe.git
+[submodule "tools/centrifuge"]
+	path = tools/centrifuge
+	url = git@github.com:hqjenny/centrifuge.git
