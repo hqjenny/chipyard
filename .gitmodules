@@ -101,3 +101,6 @@
 [submodule "tools/centrifuge"]
 	path = tools/centrifuge
 	url = git@github.com:hqjenny/centrifuge.git
+[submodule "tools/firemarshal"]
+	path = tools/firemarshal
+	url = https://github.com/firesim/FireMarshal.git

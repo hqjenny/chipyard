@@ -124,6 +124,8 @@ module_all riscv-tests --prefix="${RISCV}/riscv64-unknown-elf"
 # Common tools (not in any particular toolchain dir)
 SRCDIR="$(pwd)/toolchains" module_all qemu --prefix="${RISCV}" --target-list=riscv64-softmmu
 
+ln -s $(realpath --relative-to="$RISCV/bin" "$CHIPYARD_DIR/tools/firemarshal/marshal") $RISCV/bin/marshal
+
 cd "$RDIR"
 
 # create specific env.sh
